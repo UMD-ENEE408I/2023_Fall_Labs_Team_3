@@ -17,6 +17,18 @@ void setup() {
 }
 
 void loop() {
-  ledcWriteNote(BUZZ_CHANNEL, NOTE_C, octave);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_C, 8);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_D, octave);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_E, octave);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_F, octave);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_G, octave);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_A, octave);
+  delay(500);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_B, octave);
   delay(500);
 }
