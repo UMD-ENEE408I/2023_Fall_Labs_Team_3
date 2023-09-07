@@ -19,14 +19,19 @@ void setup() {
   Serial.begin(115200);
 }
 
+//print encoder counts
+void printEnc(Encoder &enc1, Encoder &enc2){
+  while(true) {
+    delay(500);
+    Serial.print("Encoder 1 Value: ");
+    Serial.print(enc1.read());
+    Serial.print("  Encoder 2 Value: ");
+    Serial.println(enc2.read());
+  }
+}
+
 void loop() {
-  // Create the encoder objects after the motor has
-  // stopped, else some sort exception is triggered
   Encoder enc1(M1_ENC_A, M1_ENC_B);
   Encoder enc2(M2_ENC_A, M2_ENC_B);
-
-  while(true) {
-    long enc1_value = enc1.read();
-    long enc2_value = enc2.read();
-  }
+  printEnc(enc1, enc2);
 }
