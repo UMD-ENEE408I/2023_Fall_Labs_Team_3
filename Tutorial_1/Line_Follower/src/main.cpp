@@ -39,41 +39,14 @@ const unsigned int PWM_VALUE = 512; // Max PWM given 8 bit resolution
 const int freq = 5000;
 const int resolution = 8;
 
-//has line
+//line position
 int position = 0;
 
-void forward(){
-  //start right motor
-  ledcWrite(M2_IN_1_CHANNEL, 0);
-  ledcWrite(M2_IN_2_CHANNEL, 100);
+//base speed
+float base_speed = 80;
 
-  //start left motor
-  ledcWrite(M1_IN_1_CHANNEL, 0);
-  ledcWrite(M1_IN_2_CHANNEL, 100);
-}
-
-void left(float value){
-
-  //start left motor
-  ledcWrite(M1_IN_1_CHANNEL, 0);
-  ledcWrite(M1_IN_2_CHANNEL, 150);
-}
-
-void right(float value){
-  //start right motor
-  ledcWrite(M2_IN_1_CHANNEL, 0);
-  ledcWrite(M2_IN_2_CHANNEL, 100);
-}
-
-void stop(){
-  //brake left motor
-  ledcWrite(M1_IN_1_CHANNEL, 512);
-  ledcWrite(M1_IN_2_CHANNEL, 512);
-
-  //brake right motor
-  ledcWrite(M2_IN_1_CHANNEL, 512);
-  ledcWrite(M2_IN_2_CHANNEL, 512);
-}
+//step speed
+float step_speed = 5;
 
 //light = 0, dark = 1
 void readADC() {
@@ -143,19 +116,24 @@ void setup() {
   pinMode(M2_I_SENSE, INPUT);
 }
 
-//light = 0, dark = 1
 void loop() {
   detectLinePosition();
-  ledcWrite(M1_IN_1_CHANNEL, 0);
-  ledcWrite(M1_IN_2_CHANNEL, 80);
-  ledcWrite(M2_IN_1_CHANNEL, 0);
-  ledcWrite(M2_IN_2_CHANNEL, 80);
   if(position > 6){
+    //if line on left side
+    //slow left wheel
+    ledcWrite(M1_IN_1_CHANNEL, 0);
+    ledcWrite(M1_IN_2_CHANNEL, base_speed-(position-6)*step_speed);
+    //fast right wheel
     ledcWrite(M2_IN_1_CHANNEL, 0);
-    ledcWrite(M2_IN_2_CHANNEL, 100+(position-6)*5);
+    ledcWrite(M2_IN_2_CHANNEL, base_speed+(position-6)*step_speed);
   }
   else{
+    //if line on right side
+    //slow right wheel
+    ledcWrite(M2_IN_1_CHANNEL, 0);
+    ledcWrite(M2_IN_2_CHANNEL, base_speed-(6-position)*step_speed);
+    //fast left wheel
     ledcWrite(M1_IN_1_CHANNEL, 0);
-    ledcWrite(M1_IN_2_CHANNEL, 100+(6-position)*5);
+    ledcWrite(M1_IN_2_CHANNEL, base_speed+(6-position)*step_speed);
   }
 }
