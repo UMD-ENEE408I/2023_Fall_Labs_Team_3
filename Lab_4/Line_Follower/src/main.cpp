@@ -45,13 +45,13 @@ float eprev = 0;
 float ei = 0;
 
 // PID constants
-float kp = 0.5;
-float kd = -0.0025;
+float kp = 0.25;
+float kd = -0.005;
 float ki = 0;
 
 int base_pwm;
 
-//light = 1, dark = 0
+//get dark = 0:1, get light = 1:0
 void readADC() {
   for (int i = 0; i < 8; i++) {
     adc1_buf[i] = adc1.readADC(i);
@@ -59,12 +59,12 @@ void readADC() {
 
     if (i<7) {
       //Serial.print((adc1_buf[i]>700)?"0":"1"); Serial.print("\t");
-      lines[i*2] = (adc1_buf[i]>700)?1:0;
+      lines[i*2] = (adc1_buf[i]>700)?0:1;
     }
 
     if (i<6) {
       //Serial.print((adc2_buf[i]>700)?"0":"1"); Serial.print("\t");
-      lines[i*2+1] = (adc2_buf[i]>700)?1:0;
+      lines[i*2+1] = (adc2_buf[i]>700)?0:1;
     }
   }
 }
@@ -164,7 +164,7 @@ void loop() {
   Encoder encleft(M1_ENC_A, M1_ENC_B);
   Encoder encright(M2_ENC_A, M2_ENC_B);
 
-  base_pwm = 320;
+  base_pwm = 330;
   while(1){
     detectLinePosition();
 
