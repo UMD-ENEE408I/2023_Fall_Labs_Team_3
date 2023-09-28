@@ -22,10 +22,6 @@ const unsigned int PWM_VALUE = 1023; // Do not give max PWM. Robot will move fas
 const int freq = 5000;
 const int resolution = 10;
 
-float leftmotorspd = 1;
-float rightmotorspd = 1;
-float leftmotorpwm = 0;
-float rightmotorpwm = 0;
 
 long prevT = 0;
 float eprev = 0;
@@ -36,7 +32,7 @@ float prevpos = 0;
 
 // PID constants
 float kp = 1;
-float kd = 0;
+float kd = 0.025;
 float ki = 0;
 
 
@@ -107,7 +103,7 @@ void loop() {
   Encoder encleft(M1_ENC_A, M1_ENC_B);
   Encoder encright(M2_ENC_A, M2_ENC_B);
 
-  base_pwm = 512;
+  base_pwm = 412;
   
 
   while(1){
@@ -128,8 +124,8 @@ void loop() {
     // control signal
     int u = kp*e + kd*de + ki*ei;
 
-    setleftpwm(base_pwm - u);
-    setrightpwm(base_pwm + u);
+    // setleftpwm(base_pwm - u);
+    // setrightpwm(base_pwm + u);
 
     // setleftpwm(base_pwm);
     // setrightpwm(base_pwm);
