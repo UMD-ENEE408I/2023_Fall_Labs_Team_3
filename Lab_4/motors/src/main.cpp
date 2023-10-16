@@ -32,7 +32,7 @@ float prevpos = 0;
 
 // PID constants
 float kp = 1;
-float kd = 0.025;
+float kd = 0.0;
 float ki = 0;
 
 
@@ -80,6 +80,10 @@ void setleftpwm(float value){
   }
 }
 
+void turn(float angle){
+  
+}
+
 void setup() {
   pinMode(14, OUTPUT);
   digitalWrite(14, LOW);
@@ -103,7 +107,7 @@ void loop() {
   Encoder encleft(M1_ENC_A, M1_ENC_B);
   Encoder encright(M2_ENC_A, M2_ENC_B);
 
-  base_pwm = 412;
+  base_pwm = 350;
   
 
   while(1){
@@ -124,17 +128,18 @@ void loop() {
     // control signal
     int u = kp*e + kd*de + ki*ei;
 
-    // setleftpwm(base_pwm - u);
-    // setrightpwm(base_pwm + u);
+    setleftpwm(base_pwm - u);
+    setrightpwm(base_pwm + u);
 
     // setleftpwm(base_pwm);
     // setrightpwm(base_pwm);
+    Serial.print("l_enc:");
     Serial.print(l_enc_count);
-    Serial.print('\t');
+    Serial.print("\tr_enc:");
     Serial.print(r_enc_count);
-    Serial.print('\t');
+    Serial.print("\tleftpwm");
     Serial.print(base_pwm - u);
-     Serial.print('\t');
+    Serial.print("\trightpwm");
     Serial.println(base_pwm + u);
 
     eprev = e;

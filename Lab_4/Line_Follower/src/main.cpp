@@ -45,13 +45,13 @@ float eprev = 0;
 float ei = 0;
 
 // PID constants
-float kp = 0.25;
-float kd = -0.005;
-float ki = 0;
+float kp = 25;
+float kd = 4;
+float ki = 0.005;
 
 int base_pwm;
 
-//get dark = 0:1, get light = 1:0
+//get light lines = 0:1, get dark lines = 1:0
 void readADC() {
   for (int i = 0; i < 8; i++) {
     adc1_buf[i] = adc1.readADC(i);
@@ -118,8 +118,8 @@ void setup() {
 
 void setrightpwm(float value){
   if (value == 0){
-    ledcWrite(M2_IN_1_CHANNEL, 0);
-    ledcWrite(M2_IN_2_CHANNEL, 0);
+    ledcWrite(M2_IN_1_CHANNEL, PWM_VALUE);
+    ledcWrite(M2_IN_2_CHANNEL, PWM_VALUE);
     return;
   }
   if (value > 0){
@@ -140,8 +140,8 @@ void setrightpwm(float value){
 
 void setleftpwm(float value){
   if (value == 0){
-    ledcWrite(M1_IN_1_CHANNEL, 0);
-    ledcWrite(M1_IN_2_CHANNEL, 0);
+    ledcWrite(M1_IN_1_CHANNEL, PWM_VALUE);
+    ledcWrite(M1_IN_2_CHANNEL, PWM_VALUE);
     return;
   }
   if (value > 0){
@@ -165,24 +165,71 @@ void loop() {
   Encoder encright(M2_ENC_A, M2_ENC_B);
 
   base_pwm = 330;
+  kp = 30;
+  kd = 5;
+  ki = .001;
+  //states 0 = line follower 1, 1 = get yellows, 2 = line follower2, 3 = stop
+  int state = 0;
+  int next_state = 1;
+  bool change = false;
   while(1){
-    detectLinePosition();
+    switch(0){
+      case 0:
+        detectLinePosition();
 
-    int r_enc_count = encright.read();
-    int l_enc_count = encleft.read();
+        int e = (position-6);
 
-    int e = 100*(position-6);
+        int de = e-eprev;
+        eprev = e;
 
-    int de = e-eprev;
-    eprev = e;
-
-    // integral
-    ei = ei + e;
+        // integral
+        ei = ei + e;
   
-    // control signal
-    int u = kp*e + kd*de + ki*ei;
+        // control signal
+        int u = kp*e + kd*de + ki*ei;
 
-    setleftpwm(base_pwm - u);
-    setrightpwm(base_pwm + u);
+        setleftpwm(base_pwm - u);
+        setrightpwm(base_pwm + u);
+        break;
+      // case 1:
+
+      //   break;
+      // case 2:
+
+      //   break;
+      // case 3:
+      //   //stop all motors
+      //   setleftpwm(0);
+      //   setrightpwm(0);
+    }
+
+    //check state change
+    readADC();
+    change = 1;
+    for (int i = 0; i<13; i++){
+      if(lines[i]!=1){
+        change = 0;
+      }
+    }
+
+    //change states
+    // if(change){
+    //   switch(state){
+    //     case 0:
+    //       state = next_state;
+    //       next_state = (next_state == 1)?0:3;
+    //       break;
+    //     case 1:
+    //       state = next_state;
+    //       next_state = 2;
+    //       break;
+    //     case 2:
+    //       state = next_state;
+    //       next_state = 3;
+    //       break;
+    //     case 3:
+    //       break;
+    //   }
+    // }
   }
 }
