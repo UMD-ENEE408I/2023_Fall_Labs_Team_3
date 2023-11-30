@@ -16,9 +16,6 @@ char  ReplyBuffer[] = "acknowledged";       // a string to send back
 
 WiFiUDP Udp;
 
-
-
-
 void setup() {
    // Stop the right motor by setting pin 14 low
   // this pin floats high or is pulled
@@ -41,8 +38,7 @@ void setup() {
 }
 
 void loop() {
-   int packetSize = Udp.parsePacket();
-
+  int packetSize = Udp.parsePacket();
   if (packetSize) {
 
     Serial.print("Received packet of size ");
