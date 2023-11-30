@@ -21,6 +21,9 @@ ln = net.getLayerNames()
 net.getUnconnectedOutLayers()
 ln = [ln[i - 1] for i in net.getUnconnectedOutLayers()]
 
+#controls
+xpos = 0
+
 ###LOOP
 while(1):
     #read img
@@ -62,6 +65,15 @@ while(1):
             (x, y) = (boxes[i][0], boxes[i][1])
             (w, h) = (boxes[i][2], boxes[i][3])
             cv.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 2)
+
+    #TODO: controls for bot
+    #calculate x position of detected object
+    xpos = 0
+
+    MESSAGE = b'stop'
+    #send control to bot
+    sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+
     #display output image
     cv.imshow('frame', img)
     #exit loop
