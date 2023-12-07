@@ -15,6 +15,27 @@ import speech_recognition as sr
 #camera
 cam = cv.VideoCapture(2)
 
+#audio
+chunk = 1024
+sample_format = pyaudio.paInt16
+channels = 1
+fs = 44100
+seconds = 0.5
+p1 = pyaudio.PyAudio()
+p2 = pyaudio.PyAudio()
+stream1 = p1.open(format=pyaudio.paInt16,
+                channels=18,
+                rate=44100,
+                input=True,
+                frames_per_buffer=chunk,
+                input_device_index=1)
+stream2 = p2.open(format=pyaudio.paInt16,
+                channels=18,
+                rate=fs,
+                input=True,
+                frames_per_buffer=chunk,
+                input_device_index=2)
+
 #wifi
 UDP_IP = "192.168.145.251"
 UDP_PORT = 2390
@@ -36,3 +57,6 @@ while(True):
 #cleanup
 cam.release()
 cv.destroyAllWindows()
+stream.stop_stream()
+stream.close()
+p.terminate()
