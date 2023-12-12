@@ -91,7 +91,7 @@ void setLeftMotor(float value){
 }
 
 void turn(int e){
-  int speed = 100;
+  int speed = 200;
   if(e>0){
     setRightMotor(speed);
     setLeftMotor(-speed);
@@ -119,10 +119,10 @@ void rotate(float target_degrees){
   float acc = 0.02;
 
   //motor speed 0-255
-  float speed = 100;
+  float speed = 180;
 
   //time step in milliseconds
-  unsigned int step = 5;
+  unsigned int step = 1;
   //time step in seconds
   float step_time = (float) step/1000.0;
 
@@ -233,13 +233,5 @@ void loop() {
         brake();
         break;
     }
-
-    // // send a reply, to the IP address and port that sent us the packet we received
-
-    // Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-
-    // Udp.printf("%s", ReplyBuffer);
-
-    // Udp.endPacket();
   }
 }

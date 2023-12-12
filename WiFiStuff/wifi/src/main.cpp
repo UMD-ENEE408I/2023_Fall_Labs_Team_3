@@ -21,7 +21,7 @@ void setup() {
   // this pin floats high or is pulled
   // high during the bootloader phase for some reason
   pinMode(14, OUTPUT);
-  digitalWrite(14, LOW);
+  digitalWrite(14, HIGH);
   delay(100);
 
   Serial.begin(115200);

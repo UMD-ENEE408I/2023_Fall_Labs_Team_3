@@ -10,7 +10,7 @@ UDP_PORT = 2390
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
 
 #camera
-cam_index = 2
+cam_index = 1
 cam = cv.VideoCapture(cam_index)
 
 #Yolo
@@ -45,8 +45,8 @@ while(1):
             scores = detection[5:]
             classID = np.argmax(scores)
             confidence = scores[classID]
-            if classes[classID] == 'person':
-                if confidence > 0.3:
+            if classes[classID] == 'dog':
+                if confidence > 0.2:
                     box = detection[:4] * np.array([imgw, imgh, imgw, imgh])
                     (centerX, centerY, width, height) = box.astype("int")
                     x = int(centerX - (width / 2))
