@@ -5,12 +5,12 @@ import socket
 ###SETUP
 #wifi
 #REMEMBER TO CHANGE IP AND PORT!!
-UDP_IP = "192.168.13.3"
+UDP_IP = "192.168.145.3"
 UDP_PORT = 2390
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
 
 #camera
-cam_index = 0
+cam_index = 1
 cam = cv.VideoCapture(cam_index)
 
 #Yolo
@@ -39,16 +39,15 @@ while(1):
 
     boxes = []
     confidences = []
-    h, w = img.shape[:2]
-
+    imgh, imgw = img.shape[:2]
     for output in outputs:
         for detection in output:
             scores = detection[5:]
             classID = np.argmax(scores)
             confidence = scores[classID]
-            if classes[classID] == 'person':
-                if confidence > 0.5:
-                    box = detection[:4] * np.array([w, h, w, h])
+            if classes[classID] == 'dog':
+                if confidence > 0.2:
+                    box = detection[:4] * np.array([imgw, imgh, imgw, imgh])
                     (centerX, centerY, width, height) = box.astype("int")
                     x = int(centerX - (width / 2))
                     y = int(centerY - (height / 2))
@@ -58,22 +57,33 @@ while(1):
     
     indices = cv.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
 
+    x = 0
+    w = 0
+    MESSAGE = 'b'
     #get detected areas
     if len(indices) > 0:
-        print("detected")
         for i in indices.flatten():
             (x, y) = (boxes[i][0], boxes[i][1])
             (w, h) = (boxes[i][2], boxes[i][3])
             cv.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 2)
+        #calculate x position of detected object
+        xpos = (x+w/2)
+        #calculate angle
+        angle = -60
+        angle = angle + 120*xpos/640
+        if(angle > 10):
+            angle = round(angle/10)
+            MESSAGE = f'l{angle}'
+        if(angle < -10):
+            angle = -1*round(angle/10)
+            MESSAGE = f'r{angle}'
 
     #TODO: controls for bot
-    #calculate x position of detected object
-    xpos = 0
 
-    MESSAGE = b'stop'
     #send control to bot
+    MESSAGE = b = bytes(MESSAGE, 'utf-8')
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
-
+    print("sent" + str(MESSAGE))
     #display output image
     cv.imshow('frame', img)
     #exit loop
