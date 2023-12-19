@@ -118,7 +118,7 @@ void forward(int distance, Encoder &encleft, Encoder &encright){
   float kd = 5;
   float ki = 0;
 
-  int base_pwm = 330;
+  int base_pwm = 370;
 
   int u = 0;
 
@@ -158,6 +158,7 @@ void speak(){
   //stop motors
   //brake();
   ledcAttachPin(BUZZ, BUZZ_CHANNEL);
+  brake();
   ledcWriteNote(BUZZ_CHANNEL, NOTE_C, 8);
   delay(1000);
   ledcDetachPin(BUZZ);
@@ -165,6 +166,55 @@ void speak(){
   // Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
   // Udp.printf("%s", ReplyBuffer);
   // Udp.endPacket();
+}
+
+void sing(Encoder &encleft){
+  note_t melody[] = {NOTE_E, NOTE_E, NOTE_E, NOTE_E, NOTE_E, NOTE_E,
+                  NOTE_E, NOTE_G, NOTE_C, NOTE_D, NOTE_E,
+                  NOTE_F, NOTE_F, NOTE_F, NOTE_F, NOTE_F,
+                  NOTE_E, NOTE_E, NOTE_E, NOTE_E,
+                  NOTE_G, NOTE_G, NOTE_F, NOTE_D};
+  int duration[] = {4,4,2,4,4,2,4,4,4,4,1,4,4,4,4,4,4,4,8,8,4,4,4,4};
+  ledcAttachPin(BUZZ, BUZZ_CHANNEL);
+  brake();
+  for(int i = 0; i<24; i++){
+    ledcWriteNote(BUZZ_CHANNEL, melody[i], 7);
+    delay(1000/duration[i]);
+    ledcDetachPin(BUZZ);
+    delay(10);
+    ledcAttachPin(BUZZ, BUZZ_CHANNEL);
+    brake();
+  }
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_C, 7);
+  //run in circle
+  encleft.write(0);
+  int e = 0;
+
+  //pid stuff
+  float eprev = 0;
+  float de = 0;
+  float ei = 0;
+
+  // PID constants
+  float kp = 10;
+  float kd = 5;
+  float ki = 0;
+
+  int base_pwm = 370;
+
+  int u = 0;
+  for(int i = 0; i<1000; i++){
+    e = encleft.read()-i*1840/1000;
+    de = e-eprev;
+    ei = ei + e;
+    u = kp*e + kd*de + ki*ei;
+    setLeftMotor(-(base_pwm+u));
+    delay(1);
+  }
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_D, 7);
+  delay(250);
+  ledcDetachPin(BUZZ);
+  brake();
 }
 
 void rotate(float target_degrees){
@@ -201,6 +251,12 @@ void rotate(float target_degrees){
     mpu.getEvent(&a, &g, &temp);
     delay(step);
     r += g.gyro.z * step_time*2;
+    if(r > 6.2832){
+      r -= 6.2832;
+    }
+    if(r < -6.2832){
+      r += 6.2832;
+    }
   }
   //stop motors
   brake();
@@ -240,7 +296,9 @@ void setup() {
   delay(100);
 
   Serial.begin(115200);
-  
+  // Encoder encleft(M1_ENC_A, M1_ENC_B);
+  // Encoder encright(M2_ENC_A, M2_ENC_B);
+  // forward(16, encleft, encright);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
   Serial.print("Connecting to WiFi ..");
@@ -304,6 +362,10 @@ void loop() {
           case 'f':
             Serial.println("forward!");
             forward(atoi(packetBuffer+1), encleft, encright);
+            break;
+          case 'j':
+            Serial.println("singing");
+            sing(encleft);
             break;
           default:
             brake();
