@@ -178,14 +178,14 @@ void sing(Encoder &encleft){
   ledcAttachPin(BUZZ, BUZZ_CHANNEL);
   brake();
   for(int i = 0; i<24; i++){
-    ledcWriteNote(BUZZ_CHANNEL, melody[i], 8);
+    ledcWriteNote(BUZZ_CHANNEL, melody[i], 7);
     delay(1000/duration[i]);
     ledcDetachPin(BUZZ);
     delay(10);
     ledcAttachPin(BUZZ, BUZZ_CHANNEL);
     brake();
   }
-  ledcWriteNote(BUZZ_CHANNEL, NOTE_C, 8);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_C, 7);
   //run in circle
   encleft.write(0);
   int e = 0;
@@ -211,7 +211,7 @@ void sing(Encoder &encleft){
     setLeftMotor(-(base_pwm+u));
     delay(1);
   }
-  ledcWriteNote(BUZZ_CHANNEL, NOTE_D, 8);
+  ledcWriteNote(BUZZ_CHANNEL, NOTE_D, 7);
   delay(250);
   ledcDetachPin(BUZZ);
   brake();
