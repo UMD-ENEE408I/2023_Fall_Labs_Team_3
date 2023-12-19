@@ -210,16 +210,19 @@ def sing():
     sendCommand('j')
     return 'wait'
 
-def findCow(angle, h):
+def findCow(angle, h, langle):
     if angle < 0:
-        turn(2)
+        if langle > 0:
+            turn(-2)
+        else:
+            turn(2)
         time.sleep(1)
         print('waiting for turn')
-        return 'dog'
+        return ('dog', 0)
     else:
         if h > 200:
             print('found')
-            return 'wait'
+            return ('wait', 0)
         else:
             angle =  60-(120*angle/640)
             turn(angle)
@@ -229,9 +232,9 @@ def findCow(angle, h):
             time.sleep(1)
             cangle, ch = burstFind('dog')
             if cangle < 0:
-                return 'wait'
+                return ('wait', 0)
             else:
-                return 'dog'
+                return ('dog', 60-(120*cangle/640))
 
 # found = False
 # counter = 0
@@ -295,6 +298,7 @@ def cleanup():
 
 ##########################################################  main loop  ######################################
 print('loop')
+langle = 0
 while(True):
     #time.sleep(0.5)
     ret, img = cam.read()
@@ -309,7 +313,7 @@ while(True):
             print('speaking')
             state = speak()
         case 'dog':
-            state = findCow(cangle, ch)
+            state, langle = findCow(cangle, ch, langle)
         # case 'giraffe':
         #     state = goto('giraffe', found, counter)
         case 'sing':
